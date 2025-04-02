@@ -1,0 +1,32 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity LFSR_8bit is
+    Port (
+        clk     : in  std_logic;  -- Reloj
+        reset   : in  std_logic;  -- Reset
+        enable  : in  std_logic;  -- Habilitación
+        lfsr_out: out std_logic_vector(7 downto 0)  -- Salida del LFSR
+    );
+end LFSR_8bit;
+
+architecture Behavioral of LFSR_8bit is
+    signal lfsr_reg : std_logic_vector(7 downto 0) := "00000001"; -- Estado inicial
+begin
+    process(clk, reset)
+    begin
+        if reset = '1' then
+            lfsr_reg <= "00000001";  -- Reiniciar el LFSR
+        elsif rising_edge(clk) then
+            if enable = '1' then
+                -- Polinomio primitivo: x^8 + x^6 + x^5 + x^4 + 1
+                lfsr_reg <= lfsr_reg(6 downto 0) & (lfsr_reg(7) xor lfsr_reg(5) xor lfsr_reg(4) xor lfsr_reg(3));
+            end if;
+        end if;
+    end process;
+
+    -- Asignar la salida del LFSR
+    lfsr_out <= lfsr_reg;
+end Behavioral;
